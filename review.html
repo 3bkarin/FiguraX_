@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FIGURAX Customer Review">
+  <title>FIGURAX - Review</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/customer.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/figurax-theme.css">
+  <link rel="icon" href="assets/favicon.png">
+</head>
+<body>
+  <main class="review-page" id="reviewPage">
+    <div class="review-shell">
+      <a class="review-brand" href="index.html">FIGURAX</a>
+      <div id="reviewLoading" class="review-state">جاري تجهيز صفحة التقييم...</div>
+      <section id="reviewCard" class="review-card" hidden>
+        <div class="review-header">
+          <div class="review-icon"><i class="fa-solid fa-star"></i></div>
+          <h1 data-i18n="review.title">شاركنا رأيك</h1>
+          <p data-i18n="review.subtitle">رأيك بيساعدنا نطور FIGURAX ❤️</p>
+        </div>
+        <div class="review-order-info">
+          <div><span data-i18n="review.customer">العميل</span><strong id="reviewCustomer"></strong></div>
+          <div><span data-i18n="review.order">رقم الطلب</span><strong id="reviewOrder"></strong></div>
+          <div><span data-i18n="review.products">المنتجات</span><strong id="reviewProducts"></strong></div>
+        </div>
+        <form id="reviewForm">
+          <label class="form-label" data-i18n="review.rating">التقييم</label>
+          <div class="star-rating" id="starRating" role="radiogroup" aria-label="Rating">
+            <button type="button" data-rating="1" aria-label="1 star">★</button>
+            <button type="button" data-rating="2" aria-label="2 stars">★</button>
+            <button type="button" data-rating="3" aria-label="3 stars">★</button>
+            <button type="button" data-rating="4" aria-label="4 stars">★</button>
+            <button type="button" data-rating="5" aria-label="5 stars">★</button>
+          </div>
+          <input type="hidden" id="rating" value="0">
+          <label class="form-label" for="reviewComment" data-i18n="review.comment">اكتب رأيك</label>
+          <textarea id="reviewComment" rows="6" maxlength="2000" required data-i18n-placeholder="review.commentPlaceholder" placeholder="اكتب لنا رأيك عن تجربتك مع المنتج..."></textarea>
+          <button class="btn btn-primary btn-lg review-submit" type="submit" data-i18n="review.submit">إرسال التقييم</button>
+        </form>
+        <div id="reviewMessage" class="review-message" hidden></div>
+      </section>
+      <a href="index.html" class="review-back" data-i18n="review.backHome">العودة للرئيسية</a>
+    </div>
+  </main>
+  <script type="module" src="assets/js/review.js"></script>
+</body>
+</html>

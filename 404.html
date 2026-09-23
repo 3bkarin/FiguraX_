@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>الصفحة غير موجودة - FIGURAX Store</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  >
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+
+  <style>
+    .error-page {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--spacing-xl);
+    }
+
+    .error-code {
+      font-size: 12rem;
+      font-weight: 900;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .error-message {
+      font-size: var(--font-size-2xl);
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .error-description {
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-xl);
+      max-width: 400px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header" role="banner">
+  <div class="header-inner">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sideMenu">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <a href="index.html" class="header-logo" aria-label="FIGURAX - الرئيسية">
+      <span class="brand-wordmark">FIGURAX</span>
+    </a>
+
+    <div class="header-actions">
+      <div class="language-control" aria-label="تغيير اللغة">
+        <span class="lang-text" id="languageLabel">English</span>
+        <label class="viking-toggle" aria-label="تبديل اللغة">
+          <input type="checkbox" class="viking-toggle__checkbox" id="languageToggle" />
+          <div class="viking-toggle__track">
+            <div class="viking-toggle__chain viking-toggle__chain--left"></div>
+            <div class="viking-toggle__chain viking-toggle__chain--right"></div>
+            <div class="viking-toggle__inner">
+              <span class="viking-toggle__runes">ᛟ ᛏ ᛞ ᛁ ᚾ</span>
+            </div>
+            <div class="viking-toggle__glow"></div>
+            <div class="viking-toggle__embers">
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+            </div>
+            <svg class="viking-toggle__icon viking-toggle__icon--left" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.92 5L5 6.92l5.79 5.79L4.5 19H8l4-4 3.08 3.08L16.92 19l-5.79-5.79L18 6.5V3l-6.29 6.29L6.92 5z"></path>
+            </svg>
+            <svg class="viking-toggle__icon viking-toggle__icon--right" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 2L2 7l3 2-3 6 6-2 4 9 4-9 6 2-3-6 3-2-10-5zm0 4l4 2-4 8-4-8 4-2z"></path>
+            </svg>
+            <div class="viking-toggle__knob"><div class="viking-toggle__shield"></div></div>
+          </div>
+        </label>
+      </div>
+
+      <a href="cart.html" class="cart-btn" aria-label="عربة التسوق">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-count" id="cartCount" aria-hidden="true">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="side-menu-overlay" id="sideMenuOverlay" hidden></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true" aria-label="القائمة الرئيسية">
+  <div class="side-menu-header">
+    <span class="side-menu-title">FIGURAX</span>
+    <button class="side-menu-close" id="sideMenuClose" type="button" aria-label="إغلاق القائمة">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </div>
+  <nav class="side-menu-nav" aria-label="التنقل الرئيسي">
+    <a href="index.html" data-i18n="nav.home"><i class="fa-solid fa-house" aria-hidden="true"></i><span>الرئيسية</span></a>
+    <a href="products.html" data-i18n="nav.products"><i class="fa-solid fa-box-open" aria-hidden="true"></i><span>المنتجات</span></a>
+    <a href="cart.html" data-i18n="nav.cart"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>العربة</span><span class="side-cart-count" id="sideCartCount">0</span></a>
+  </nav>
+</aside>
+
+  <main id="main-content" role="main">
+
+    <div class="error-page">
+      <div>
+
+        <div class="error-code">
+          404
+        </div>
+
+        <h1
+          class="error-message"
+          data-i18n="common.pageNotFound"
+        >
+          الصفحة غير موجودة
+        </h1>
+
+        <p
+          class="error-description"
+          data-i18n="common.pageNotFoundDesc"
+        >
+          عذرًا، الصفحة التي تبحث عنها غير موجودة
+          أو تم نقلها.
+        </p>
+
+        <a
+          href="index.html"
+          class="btn btn-primary btn-lg"
+          data-i18n="common.backToHome"
+        >
+          العودة للرئيسية
+        </a>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer" role="contentinfo">
+
+    <div class="container">
+
+      <div class="footer-bottom">
+
+        <p>
+          &copy; 2025 FIGURAX Store.
+          <span data-i18n="common.allRights">
+            جميع الحقوق محفوظة
+          </span>.
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script type="module">
+    import {
+      initLanguage,
+      loadTranslations,
+      translatePage,
+      getLanguage
+    } from './assets/js/i18n.js';
+
+    import {
+      getCartCount,
+      onCartUpdate
+    } from './assets/js/cart.js';
+
+    import {
+      setupLanguageSwitcher,
+      setupMobileMenu
+    } from './assets/js/common.js';
+
+    async function loadLanguage(lang) {
+      const response = await fetch(`locales/${lang}.json`);
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load language: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      loadTranslations(lang, data);
+      translatePage();
+    }
+
+    function updateCartCount() {
+      const cartCount = document.getElementById('cartCount');
+
+      if (!cartCount) {
+        return;
+      }
+
+      const count = getCartCount();
+
+      cartCount.textContent = count;
+      cartCount.style.display =
+        count > 0 ? 'flex' : 'none';
+    }
+
+    async function init() {
+      try {
+        initLanguage();
+
+        await loadLanguage(getLanguage());
+
+        setupLanguageSwitcher();
+        setupMobileMenu();
+
+        updateCartCount();
+
+        onCartUpdate(() => {
+          updateCartCount();
+        });
+      } catch (error) {
+        console.error(
+          'Failed to initialize 404 page:',
+          error
+        );
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        init
+      );
+    } else {
+      init();
+    }
+  </script>
+
+</body>
+</html>
