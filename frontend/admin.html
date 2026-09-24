@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIGURAX Store - لوحة التحكم</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="icon" href="assets/favicon.png">
+  <style>
+    .spinner { width: 24px; height: 24px; border: 3px solid var(--admin-border); border-top-color: var(--admin-accent); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .chart-container { position: relative; height: 300px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+    .stat-card { background: var(--admin-card); border: 2px solid var(--admin-border); border-radius: 12px; padding: var(--spacing-lg); }
+    .stat-card.primary { border-right: 6px solid var(--admin-accent); }
+    .stat-card.success { border-right: 6px solid var(--admin-success); }
+    .stat-card.warning { border-right: 6px solid var(--admin-warning); }
+    .stat-card.info { border-right: 6px solid var(--admin-info); }
+    .stat-label { font-size: var(--font-size-sm); color: var(--admin-text-muted); margin-bottom: var(--spacing-xs); }
+    .stat-value { font-size: var(--font-size-2xl); font-weight: 800; color: var(--admin-text); }
+    .team-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+    .team-card { background: var(--admin-card); border: 2px solid var(--admin-border); border-radius: 12px; padding: var(--spacing-lg); }
+    .team-card h4 { color: var(--admin-error); margin-bottom: var(--spacing-sm); }
+    .team-card p { margin: var(--spacing-xs) 0; }
+    .team-card .expense { color: var(--admin-error); }
+    .team-card .fund { color: var(--admin-success); }
+    .filter-row { display: flex; gap: var(--spacing-md); flex-wrap: wrap; margin-bottom: var(--spacing-md); }
+    .filter-row select { min-width: 180px; }
+    .modal-form { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .modal-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+    @media (max-width: 576px) { .modal-form-row { grid-template-columns: 1fr; } }
+    .image-preview { max-width: 200px; max-height: 200px; border-radius: var(--border-radius-md); border: 2px solid var(--admin-border); display: none; }
+    .image-preview.visible { display: block; }
+    .file-input-wrapper { position: relative; }
+    .file-input-wrapper input[type="file"] { display: none; }
+    .file-input-label { display: inline-block; padding: var(--spacing-sm) var(--spacing-md); background: var(--admin-border); color: var(--admin-text); border-radius: var(--border-radius-md); cursor: pointer; }
+    .file-input-label:hover { background: var(--admin-accent); }
+    .hidden { display: none !important; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); flex-wrap: wrap; gap: var(--spacing-md); }
+    .section-title { font-size: var(--font-size-xl); font-weight: 800; color: var(--admin-text); }
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-md); }
+    .review-card { background: var(--admin-card); border: 2px solid var(--admin-border); border-radius: 12px; padding: var(--spacing-md); }
+    .review-card img { max-width: 100%; border-radius: var(--border-radius-md); margin-top: var(--spacing-sm); }
+  </style>
+  <link rel="stylesheet" href="assets/css/figurax-theme.css">
+</head>
+<body class="admin-body">
+  <a href="#main-content" class="skip-link">الانتقال للمحتوى الرئيسي</a>
+
+  <nav class="admin-navbar" role="banner">
+    <a href="#" class="admin-brand" aria-label="FIGURAX"><span class="brand-wordmark">FIGURAX</span></a>
+    <div id="userInfoHeader">
+      <span class="me-3">المسؤول: <strong id="currentUserDisplay"></strong></span>
+      <button class="admin-btn admin-btn-danger btn-sm" onclick="logout()">خروج</button>
+    </div>
+  </nav>
+
+  <div id="loginSection" class="container" style="max-width:500px;margin:var(--spacing-xl) auto;padding:var(--spacing-xl);">
+    <div class="admin-card text-center">
+      <h2 class="fw-bold mb-3" data-i18n="admin.login">تسجيل الدخول</h2>
+      <p class="mb-4" style="color:var(--admin-text-muted);">متجر المجسمات والتحف الفنية</p>
+      <div id="loginAlert" class="admin-card" style="background:rgba(230,57,70,0.1);border-color:var(--admin-error);color:var(--admin-error);margin-bottom:var(--spacing-md);display:none;"></div>
+      <form onsubmit="handleLogin(event)" id="loginForm">
+        <div class="form-group" style="text-align:right;">
+          <label class="form-label" data-i18n="admin.username">المسؤول</label>
+          <select id="loginUserSelect" class="admin-select" required>
+            <option value="">-- اختر الاسم --</option>
+            <option value="Mazen">Mazen</option>
+            <option value="Mohanad">Mohanad</option>
+            <option value="Selim">Selim</option>
+            <option value="Mahrous">Mahrous</option>
+            <option value="Ashraf">Ashraf</option>
+          </select>
+        </div>
+        <div class="form-group" style="text-align:right;">
+          <label class="form-label" data-i18n="admin.password">كلمة المرور</label>
+          <input type="password" id="loginPassword" class="admin-input" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary btn-block btn-lg" data-i18n="admin.login">دخول النظام</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="mainDashboard" class="hidden">
+    <div class="admin-layout">
+      <aside class="admin-sidebar" id="adminSidebar" role="navigation" aria-label="القائمة الجانبية">
+        <nav class="admin-nav">
+          <a class="admin-nav-link active" href="#" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="admin.dashboard">لوحة الماليات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('categories', this)"><i class="fa-solid fa-layer-group"></i> <span data-i18n="admin.categories">التصنيفات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('products', this)"><i class="fa-solid fa-cubes"></i> <span data-i18n="admin.products">المنتجات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('orders', this)"><i class="fa-solid fa-cart-shopping"></i> <span data-i18n="admin.orders">الأوردرات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('fund', this)"><i class="fa-solid fa-vault"></i> <span data-i18n="admin.fund">التمويل</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('analysis', this)"><i class="fa-solid fa-chart-line"></i> <span data-i18n="admin.analysis">التحليلات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('settings', this)"><i class="fa-solid fa-gear"></i> <span data-i18n="admin.settings">الإعدادات</span></a>
+          <a class="admin-nav-link" href="#" onclick="showSection('reviews', this)"><i class="fa-solid fa-star"></i> <span data-i18n="admin.reviews">التقييمات</span></a>
+        </nav>
+      </aside>
+
+      <main class="admin-main" id="main-content" role="main">
+        <div id="globalAlert" class="admin-card" style="background:rgba(255,159,28,0.1);border-color:var(--admin-warning);color:var(--admin-warning);display:none;margin-bottom:var(--spacing-lg);"></div>
+
+        <section id="sectionDashboard" aria-labelledby="dashboard-title">
+          <header class="section-header">
+            <h2 id="dashboard-title" class="section-title" data-i18n="admin.dashboard">لوحة الماليات</h2>
+          </header>
+
+          <div class="stat-grid" id="dashboardStats">
+            <div class="stat-card primary"><div class="stat-label" data-i18n="admin.totalRevenue">إجمالي المبيعات</div><div class="stat-value" id="statRevenue">0 جنيه</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="admin.printingCosts">تكاليف الطباعة</div><div class="stat-value" id="statPrintingCosts" style="color:var(--admin-error);">0 جنيه</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="admin.shippingCosts">الشحن</div><div class="stat-value" id="statShippingCosts" style="color:var(--admin-warning);">0 جنيه</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="admin.rawMaterial">مصروفات خامات</div><div class="stat-value" id="statRawMaterial" style="color:var(--admin-error);">0 جنيه</div></div>
+            <div class="stat-card success"><div class="stat-label" data-i18n="admin.netProfit">صافي الربح</div><div class="stat-value" id="statNetProfit" style="color:var(--admin-success);">0 جنيه</div></div>
+            <div class="stat-card info"><div class="stat-label" data-i18n="admin.totalFunding">التمويل</div><div class="stat-value" id="statTotalFunding" style="color:var(--admin-info);">0 جنيه</div></div>
+            <div class="stat-card warning"><div class="stat-label" data-i18n="admin.profitPerMember">نصيب الفرد</div><div class="stat-value" id="statProfitPerMember" style="color:var(--admin-warning);">0 جنيه</div></div>
+            <div class="stat-card info"><div class="stat-label">الرصيد النقدي بعد التمويل والمصروفات</div><div class="stat-value" id="statCashBalance">0 جنيه</div></div>
+          </div>
+
+          <div class="admin-card chart-container">
+            <canvas id="financeChart"></canvas>
+          </div>
+        </section>
+
+        <section id="sectionCategories" class="hidden" aria-labelledby="categories-title">
+          <header class="section-header">
+            <h2 id="categories-title" class="section-title" data-i18n="admin.categories">التصنيفات</h2>
+            <button class="admin-btn admin-btn-primary" onclick="openCategoryModal()"><i class="fa-solid fa-plus"></i> <span data-i18n="admin.addCategory">إضافة تصنيف</span></button>
+          </header>
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th data-i18n="admin.name">الاسم</th><th data-i18n="admin.description">الوصف</th><th data-i18n="admin.productCount">عدد المنتجات</th><th data-i18n="admin.action">إجراء</th></tr></thead>
+              <tbody id="categoriesTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="sectionProducts" class="hidden" aria-labelledby="products-title">
+          <header class="section-header">
+            <h2 id="products-title" class="section-title" data-i18n="admin.products">المنتجات</h2>
+            <button class="admin-btn admin-btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> <span data-i18n="admin.addProduct">إضافة منتج</span></button>
+          </header>
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th data-i18n="admin.category">التصنيف</th><th data-i18n="admin.name">المنتج</th><th data-i18n="admin.dimensions">الأبعاد</th><th data-i18n="admin.weight">الوزن</th><th data-i18n="admin.infill">Infill %</th><th data-i18n="admin.material">الخامة</th><th data-i18n="admin.manufacturingCost">التكلفة</th><th data-i18n="admin.sellingPrice">سعر البيع</th><th data-i18n="admin.action">إجراء</th></tr></thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="sectionOrders" class="hidden" aria-labelledby="orders-title">
+          <header class="section-header">
+            <h2 id="orders-title" class="section-title" data-i18n="admin.orders">الأوردرات</h2>
+            <button class="admin-btn admin-btn-primary" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> <span data-i18n="admin.addOrder">تسجيل أوردر</span></button>
+          </header>
+
+          <div class="filter-row">
+            <select id="orderStatusFilter" class="admin-select" onchange="filterOrders()">
+              <option value="ALL" data-i18n="admin.allStatus">الكل</option>
+              <option value="Pending" data-i18n="admin.pending">معلق</option>
+              <option value="Processing" data-i18n="admin.processing">جاري التجهيز</option>
+              <option value="Accepted" data-i18n="admin.accepted">مقبول</option>
+              <option value="Delivered" data-i18n="admin.delivered">مسلم</option>
+              <option value="Returned" data-i18n="admin.returned">مرتجع</option>
+              <option value="Rejected" data-i18n="admin.rejected">مرفوض</option>
+            </select>
+
+            <select id="orderSourceFilter" class="admin-select" onchange="filterOrders()">
+              <option value="ALL" data-i18n="admin.allSources">كل المنصات</option>
+              <option value="website" data-i18n="admin.website">الموقع</option>
+              <option value="انستجرام" data-i18n="admin.instagram">انستجرام</option>
+              <option value="واتساب" data-i18n="admin.whatsapp">واتساب</option>
+            </select>
+          </div>
+
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th data-i18n="admin.customerName">العميل</th><th data-i18n="admin.phone">الهاتف</th><th data-i18n="admin.governorate">المحافظة</th><th data-i18n="admin.products">المنتجات</th><th data-i18n="admin.totalPrice">الإجمالي</th><th data-i18n="admin.status">الحالة</th><th data-i18n="admin.platform">المنصة</th><th data-i18n="admin.action">إجراء</th></tr></thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="sectionFund" class="hidden" aria-labelledby="fund-title">
+          <header class="section-header">
+            <h2 id="fund-title" class="section-title" data-i18n="admin.fund">التمويل والمصروفات</h2>
+            <div class="flex gap-sm">
+              <button class="admin-btn admin-btn-primary" onclick="openFundModal()"><i class="fa-solid fa-plus"></i> <span data-i18n="admin.addFund">إضافة تمويل/مصروف</span></button>
+              <button class="admin-btn admin-btn-warning hidden" id="editFundBtn" onclick="openEditFundModal()"><i class="fa-solid fa-pen"></i> <span data-i18n="admin.editFund">تعديل معاملة (محروس)</span></button>
+            </div>
+          </header>
+
+          <div class="team-cards" id="teamFundCards"></div>
+
+          <div class="filter-row">
+            <select id="fundNameFilter" class="admin-select" onchange="filterFund()">
+              <option value="ALL" data-i18n="admin.allMembers">الكل</option>
+              <option value="Mazen">Mazen</option>
+              <option value="Mohanad">Mohanad</option>
+              <option value="Selim">Selim</option>
+              <option value="Mahrous">Mahrous</option>
+              <option value="Ashraf">Ashraf</option>
+            </select>
+
+            <select id="fundTypeFilter" class="admin-select" onchange="filterFund()">
+              <option value="ALL" data-i18n="admin.allTypes">الكل</option>
+              <option value="تمويل رأس مال" data-i18n="admin.capitalFunding">تمويل</option>
+              <option value="مصروف خامات" data-i18n="admin.rawMaterialExpense">مصروف خامات</option>
+            </select>
+          </div>
+
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th data-i18n="admin.date">التاريخ</th><th data-i18n="admin.name">المسؤول</th><th data-i18n="admin.fundType">النوع</th><th data-i18n="admin.amount">المبلغ</th><th data-i18n="admin.details">التفاصيل</th><th data-i18n="admin.paymentMethod">طريقة الدفع</th><th data-i18n="admin.paymentProof">إثبات</th></tr></thead>
+              <tbody id="fundTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="sectionAnalysis" class="hidden" aria-labelledby="analysis-title">
+          <header class="section-header">
+            <h2 id="analysis-title" class="section-title" data-i18n="admin.analysis">التحليلات</h2>
+          </header>
+
+          <div class="stat-grid">
+            <div class="stat-card success"><div class="stat-label" data-i18n="admin.delivered">مسلم</div><div class="stat-value" id="statDelivered" style="color:var(--admin-success);">0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="admin.rejected">مرفوض</div><div class="stat-value" id="statRejected" style="color:var(--admin-error);">0</div></div>
+            <div class="stat-card warning"><div class="stat-label" data-i18n="admin.returned">مرتجع</div><div class="stat-value" id="statReturned" style="color:var(--admin-warning);">0</div></div>
+          </div>
+
+          <div class="admin-card">
+            <h3 class="section-title mb-md" data-i18n="admin.bestSellers">الأكثر مبيعاً</h3>
+            <ul id="bestSellersList" class="admin-list"></ul>
+          </div>
+
+          <div class="admin-card">
+            <h3 class="section-title mb-md" data-i18n="admin.bestCustomers">أفضل العملاء</h3>
+            <div id="bestCustomersDetails"></div>
+          </div>
+        </section>
+
+        <section id="sectionSettings" class="hidden" aria-labelledby="settings-title">
+          <header class="section-header">
+            <h2 id="settings-title" class="section-title" data-i18n="admin.settings">إعدادات المتجر</h2>
+          </header>
+
+          <div class="admin-card">
+            <form id="settingsForm" class="modal-form">
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.brandName">اسم العلامة التجارية</label>
+                <input type="text" id="settingBrandName" class="admin-input" name="brand_name">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.whatsapp">واتساب</label>
+                <input type="text" id="settingWhatsapp" class="admin-input" name="whatsapp">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.instagram">إنستجرام</label>
+                <input type="url" id="settingInstagram" class="admin-input" name="instagram">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.facebook">فيسبوك</label>
+                <input type="url" id="settingFacebook" class="admin-input" name="facebook">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.tiktok">تيك توك</label>
+                <input type="url" id="settingTiktok" class="admin-input" name="tiktok">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.instapayUsername">يوزر إنستاباي</label>
+                <input type="text" id="settingInstapayUsername" class="admin-input" name="instapay_username">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.instapayLink">رابط إنستاباي</label>
+                <input type="url" id="settingInstapayLink" class="admin-input" name="instapay_link">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.companyEmail">إيميل الشركة</label>
+                <input type="email" id="settingCompanyEmail" class="admin-input" name="company_email">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="admin.teamSize">حجم الفريق</label>
+                <input type="number" id="settingTeamSize" class="admin-input" name="team_size" min="1">
+              </div>
+              <button type="submit" class="admin-btn admin-btn-primary" data-i18n="common.save">حفظ الإعدادات</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="sectionReviews" class="hidden" aria-labelledby="reviews-title">
+          <header class="section-header">
+            <h2 id="reviews-title" class="section-title" data-i18n="admin.reviews">التقييمات</h2>
+            <button class="admin-btn admin-btn-primary" onclick="openReviewModal()"><i class="fa-solid fa-plus"></i> <span data-i18n="admin.addReview">إضافة تقييم</span></button>
+          </header>
+
+          <div class="reviews-grid" id="reviewsContainer"></div>
+        </section>
+      </main>
+    </div>
+
+    <button class="mobile-menu-btn" id="sidebarToggle" aria-label="فتح القائمة الجانبية" style="display:none;position:fixed;bottom:var(--spacing-lg);right:var(--spacing-lg);z-index:150;background:var(--admin-accent);color:white;width:56px;height:56px;border-radius:50%;box-shadow:var(--shadow-lg);">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <div class="admin-modal-overlay" id="categoryModal" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 id="categoryModalTitle" data-i18n="admin.addCategory">إضافة تصنيف</h3>
+        <button class="admin-modal-close" onclick="closeModal('categoryModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="categoryForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.name">الاسم *</label>
+            <input type="text" id="catName" class="admin-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.description">الوصف</label>
+            <input type="text" id="catDesc" class="admin-input">
+          </div>
+        </form>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitCategory()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="productModal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle" hidden>
+    <div class="admin-modal" style="max-width:700px;">
+      <div class="admin-modal-header">
+        <h3 id="productModalTitle" data-i18n="admin.addProduct">إضافة منتج</h3>
+        <button class="admin-modal-close" onclick="closeModal('productModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="productForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.category">التصنيف *</label>
+            <select id="prdCategory" class="admin-select" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.name">اسم المنتج *</label>
+            <input type="text" id="prdName" class="admin-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.description">الوصف</label>
+            <textarea id="prdDescription" class="admin-input" rows="3"></textarea>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.dimensions">الأبعاد (سم)</label>
+              <input type="text" id="prdDimensions" class="admin-input" placeholder="10*10*15">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.weight">الوزن (جم)</label>
+              <input type="number" id="prdWeight" class="admin-input" min="0">
+            </div>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.infill">Infill %</label>
+              <input type="number" id="prdInfill" class="admin-input" min="0" max="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.material">الخامة</label>
+              <input type="text" id="prdMaterial" class="admin-input" placeholder="PLA, PETG, Resin">
+            </div>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.manufacturingCost">تكلفة التصنيع *</label>
+              <input type="number" id="prdManufacturingCost" class="admin-input" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.sellingPrice">سعر البيع *</label>
+              <input type="number" id="prdSellingPrice" class="admin-input" min="0" step="0.01" required>
+            </div>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label">السعر قبل الخصم</label>
+              <input type="number" id="prdOriginalPrice" class="admin-input" min="0" step="0.01" placeholder="اختياري">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Slug / رابط المنتج</label>
+              <input type="text" id="prdSlug" class="admin-input" placeholder="archer-incense-holder">
+            </div>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label">نوع المنتج</label>
+              <select id="prdProductType" class="admin-select">
+                <option value="">عادي</option>
+                <option value="custom">قابل للتخصيص</option>
+                <option value="gift">هدايا</option>
+                <option value="decor">ديكور</option>
+              </select>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:column;gap:12px;justify-content:flex-end;">
+              <label class="checkbox-pill" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" id="prdFeatured">
+                <span>منتج مميز</span>
+              </label>
+              <label class="checkbox-pill" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" id="prdCustomizable">
+                <span>يحتاج تخصيص</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group customization-builder">
+            <div class="builder-heading">
+              <div>
+                <label class="form-label">حقول التخصيص</label>
+                <small class="admin-help">اختار نوع الحقل واكتب الاسم بالعربي والإنجليزي. مش محتاج تكتب أي كود.</small>
+              </div>
+              <button type="button" class="admin-btn admin-btn-secondary btn-sm" onclick="addCustomizationField()"><i class="fa-solid fa-plus"></i> إضافة حقل</button>
+            </div>
+            <div id="customizationFields" class="customization-fields"></div>
+            <textarea id="prdCustomizationSchema" hidden></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.image">الصورة الرئيسية</label>
+            <div class="file-input-wrapper">
+              <input type="file" id="prdImage" accept="image/*" onchange="previewImage(this, 'prdImagePreview')">
+              <label class="file-input-label" for="prdImage">
+                <i class="fa-solid fa-upload"></i>
+                <span data-i18n="common.chooseFile">اختر ملف</span>
+              </label>
+            </div>
+            <img id="prdImagePreview" class="image-preview" alt="معاينة الصورة">
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitProduct()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle" hidden>
+    <div class="admin-modal" style="max-width:700px;">
+      <div class="admin-modal-header">
+        <h3 id="orderModalTitle" data-i18n="admin.addOrder">تسجيل أوردر جديد</h3>
+        <button class="admin-modal-close" onclick="closeModal('orderModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="orderForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.customerName">اسم العميل *</label>
+            <input type="text" id="ordCustomerName" class="admin-input" required>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.gender">الجنس *</label>
+              <select id="ordGender" class="admin-select" required>
+                <option value="ذكر" data-i18n="admin.male">ذكر</option>
+                <option value="أنثى" data-i18n="admin.female">أنثى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.phone">الهاتف *</label>
+              <input type="text" id="ordPhone" class="admin-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.governorate">المحافظة *</label>
+            <select id="ordGovernorate" class="admin-select" required></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.address">العنوان تفصيلياً *</label>
+            <input type="text" id="ordAddress" class="admin-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.locationUrl">رابط اللوكيشن</label>
+            <input type="url" id="ordLocationUrl" class="admin-input" placeholder="https://maps.google.com/...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.platform">المنصة *</label>
+            <select id="ordPlatform" class="admin-select" required>
+              <option value="website" data-i18n="admin.website">الموقع</option>
+              <option value="انستجرام" data-i18n="admin.instagram">انستجرام</option>
+              <option value="واتساب" data-i18n="admin.whatsapp">واتساب</option>
+            </select>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.product">المنتج *</label>
+              <select id="ordProduct" class="admin-select" required onchange="updateOrderPrice()"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="product.quantity">العدد *</label>
+              <input type="number" id="ordQuantity" class="admin-input" value="1" min="1" oninput="updateOrderPrice()">
+            </div>
+          </div>
+
+          <div class="modal-form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.totalPrice">إجمالي السعر *</label>
+              <input type="number" id="ordPrice" class="admin-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.shippingFee">مصاريف الشحن *</label>
+              <input type="number" id="ordShippingFee" class="admin-input" value="0" min="0">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitOrder()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="editOrderModal" role="dialog" aria-modal="true" aria-labelledby="editOrderModalTitle" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 id="editOrderModalTitle" data-i18n="admin.editOrder">تعديل الأوردر</h3>
+        <button class="admin-modal-close" onclick="closeModal('editOrderModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="editOrderForm" class="modal-form">
+          <input type="hidden" id="editOrderId">
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.status">الحالة *</label>
+            <select id="editOrderStatus" class="admin-select" required onchange="toggleEditOrderFields()">
+              <option value="Pending" data-i18n="admin.pending">معلق</option>
+              <option value="Processing" data-i18n="admin.processing">جاري التجهيز</option>
+              <option value="Accepted" data-i18n="admin.accepted">مقبول</option>
+              <option value="Delivered" data-i18n="admin.delivered">مسلم</option>
+              <option value="Returned" data-i18n="admin.returned">مرتجع</option>
+              <option value="Rejected" data-i18n="admin.rejected">مرفوض</option>
+            </select>
+          </div>
+
+          <div id="editShippingGroup" class="form-group hidden">
+            <label class="form-label" data-i18n="admin.shippingFee">مصاريف الشحن</label>
+            <input type="number" id="editOrderShipping" class="admin-input" min="0">
+          </div>
+
+          <div id="editPaymentGroup" class="form-group hidden">
+            <label class="form-label" data-i18n="admin.paymentMethod">طريقة الدفع</label>
+            <select id="editOrderPayment" class="admin-select">
+              <option value="cash_on_delivery" data-i18n="checkout.cashOnDelivery">نقداً عند الاستلام</option>
+              <option value="instapay" data-i18n="checkout.instapay">إنستاباي</option>
+            </select>
+          </div>
+
+          <div id="editDepositGroup" class="form-group hidden">
+            <label class="form-label" data-i18n="admin.deposit">العربون</label>
+            <input type="number" id="editOrderDeposit" class="admin-input" min="0">
+          </div>
+
+          <div id="editProofGroup" class="form-group hidden">
+            <label class="form-label" data-i18n="admin.paymentProof">إثبات الدفع</label>
+            <div class="file-input-wrapper">
+              <input type="file" id="editOrderProof" accept="image/*" onchange="previewImage(this, 'editProofPreview')">
+              <label class="file-input-label" for="editOrderProof">
+                <i class="fa-solid fa-upload"></i>
+                <span data-i18n="common.chooseFile">اختر ملف</span>
+              </label>
+            </div>
+            <img id="editProofPreview" class="image-preview" alt="معاينة الإثبات">
+          </div>
+
+          <div id="editReturnGroup" class="form-group hidden">
+            <label class="form-label" data-i18n="admin.returnReason">سبب الارتجاع</label>
+            <input type="text" id="editOrderReturnReason" class="admin-input">
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitEditOrder()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="fundModal" role="dialog" aria-modal="true" aria-labelledby="fundModalTitle" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 id="fundModalTitle" data-i18n="admin.addFund">إضافة تمويل / مصروف</h3>
+        <button class="admin-modal-close" onclick="closeModal('fundModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="fundForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.name">المسؤول *</label>
+            <select id="fndName" class="admin-select" required>
+              <option value="Mazen">Mazen</option>
+              <option value="Mohanad">Mohanad</option>
+              <option value="Selim">Selim</option>
+              <option value="Mahrous">Mahrous</option>
+              <option value="Ashraf">Ashraf</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.fundType">النوع *</label>
+            <select id="fndType" class="admin-select" required>
+              <option value="تمويل رأس مال" data-i18n="admin.capitalFunding">تمويل رأس مال</option>
+              <option value="مصروف خامات" data-i18n="admin.rawMaterialExpense">مصروف خامات</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.amount">المبلغ *</label>
+            <input type="number" id="fndAmount" class="admin-input" min="0.01" step="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.details">التفاصيل *</label>
+            <input type="text" id="fndDetails" class="admin-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.paymentMethod">طريقة الدفع *</label>
+            <select id="fndMethod" class="admin-select" required>
+              <option value="أنستا باي" data-i18n="checkout.instapay">إنستاباي</option>
+              <option value="فودافون كاش" data-i18n="admin.vodafoneCash">فودافون كاش</option>
+              <option value="كاش" data-i18n="admin.cash">كاش</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.paymentProof">إثبات المعاملة *</label>
+            <div class="file-input-wrapper">
+              <input type="file" id="fndImage" accept="image/*" required onchange="previewImage(this, 'fndImagePreview')">
+              <label class="file-input-label" for="fndImage">
+                <i class="fa-solid fa-upload"></i>
+                <span data-i18n="common.chooseFile">اختر ملف</span>
+              </label>
+            </div>
+            <img id="fndImagePreview" class="image-preview" alt="معاينة الإثبات">
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitFund()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="editFundModal" role="dialog" aria-modal="true" aria-labelledby="editFundModalTitle" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 id="editFundModalTitle" data-i18n="admin.editFund">تعديل معاملة مالية</h3>
+        <button class="admin-modal-close" onclick="closeModal('editFundModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="editFundForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.transactionId">ID المعاملة *</label>
+            <input type="text" id="editFndId" class="admin-input" required placeholder="FND-...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.fundType">النوع الجديد *</label>
+            <select id="editFndType" class="admin-select" required>
+              <option value="تمويل رأس مال" data-i18n="admin.capitalFunding">تمويل رأس مال</option>
+              <option value="مصروف خامات" data-i18n="admin.rawMaterialExpense">مصروف خامات</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.amount">المبلغ الجديد *</label>
+            <input type="number" id="editFndAmount" class="admin-input" min="0.01" step="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.details">التفاصيل الجديدة *</label>
+            <input type="text" id="editFndDetails" class="admin-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.paymentMethod">طريقة الدفع الجديدة *</label>
+            <select id="editFndMethod" class="admin-select" required>
+              <option value="أنستا باي" data-i18n="checkout.instapay">إنستاباي</option>
+              <option value="فودافون كاش" data-i18n="admin.vodafoneCash">فودافون كاش</option>
+              <option value="كاش" data-i18n="admin.cash">كاش</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-warning" onclick="submitEditFund()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal-overlay" id="reviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle" hidden>
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <h3 id="reviewModalTitle" data-i18n="admin.addReview">إضافة تقييم</h3>
+        <button class="admin-modal-close" onclick="closeModal('reviewModal')">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="reviewForm" class="modal-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.customerName">اسم العميل *</label>
+            <input type="text" id="revCustomerName" class="admin-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.rating">التقييم *</label>
+            <select id="revRating" class="admin-select" required>
+              <option value="5">⭐⭐⭐⭐⭐</option>
+              <option value="4">⭐⭐⭐⭐</option>
+              <option value="3">⭐⭐⭐</option>
+              <option value="2">⭐⭐</option>
+              <option value="1">⭐</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="admin.contentType">النوع *</label>
+            <select id="revType" class="admin-select" required onchange="toggleReviewFields()">
+              <option value="text" data-i18n="admin.textReview">نصي</option>
+              <option value="image" data-i18n="admin.imageReview">صورة</option>
+            </select>
+          </div>
+
+          <div id="revTextGroup">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.content">المحتوى *</label>
+              <textarea id="revText" class="admin-input" rows="3" required></textarea>
+            </div>
+          </div>
+
+          <div id="revImageGroup" class="hidden">
+            <div class="form-group">
+              <label class="form-label" data-i18n="admin.image">الصورة *</label>
+              <div class="file-input-wrapper">
+                <input type="file" id="revImage" accept="image/*" onchange="previewImage(this, 'revImagePreview')">
+                <label class="file-input-label" for="revImage">
+                  <i class="fa-solid fa-upload"></i>
+                  <span data-i18n="common.chooseFile">اختر ملف</span>
+                </label>
+              </div>
+              <img id="revImagePreview" class="image-preview" alt="معاينة الصورة">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-modal-footer">
+        <button class="admin-btn admin-btn-primary" onclick="submitReview()">
+          <i class="fa-solid fa-save"></i> <span data-i18n="common.save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="assets/js/i18n.js"></script>
+  <script type="module" src="assets/js/api.js"></script>
+  <script type="module" src="assets/js/common.js"></script>
+  <script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>

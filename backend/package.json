@@ -1,0 +1,35 @@
+{
+  "name": "figurax-backend",
+  "version": "1.0.0",
+  "description": "FIGURAX Store Backend API",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "migrate:passwords": "node scripts/migrate-passwords.js",
+    "init:sheets": "node scripts/initialize-google-sheet.js",
+    "migrate:data": "node scripts/migrate-existing-data.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "cookie-parser": "^1.4.6",
+    "googleapis": "^130.0.0",
+    "nodemailer": "^6.9.8",
+    "argon2": "^0.31.2",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.3.1",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

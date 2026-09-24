@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" data-i18n="meta.description" content="إتمام الطلب - FIGURAX Store">
+  <title data-i18n="meta.titleCheckout">إتمام الطلب - FIGURAX Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/customer.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="assets/css/figurax-theme.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link" data-i18n="common.skipToContent">الانتقال للمحتوى الرئيسي</a>
+
+  <header class="header" role="banner">
+  <div class="header-inner">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sideMenu">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <a href="index.html" class="header-logo" aria-label="FIGURAX - الرئيسية">
+      <span class="brand-wordmark">FIGURAX</span>
+    </a>
+
+    <div class="header-actions">
+      <div class="language-control" aria-label="تغيير اللغة">
+        <span class="lang-text" id="languageLabel">English</span>
+        <label class="viking-toggle" aria-label="تبديل اللغة">
+          <input type="checkbox" class="viking-toggle__checkbox" id="languageToggle" />
+          <div class="viking-toggle__track">
+            <div class="viking-toggle__chain viking-toggle__chain--left"></div>
+            <div class="viking-toggle__chain viking-toggle__chain--right"></div>
+            <div class="viking-toggle__inner">
+              <span class="viking-toggle__runes">ᛟ ᛏ ᛞ ᛁ ᚾ</span>
+            </div>
+            <div class="viking-toggle__glow"></div>
+            <div class="viking-toggle__embers">
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+              <span class="viking-toggle__ember"></span>
+            </div>
+            <svg class="viking-toggle__icon viking-toggle__icon--left" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.92 5L5 6.92l5.79 5.79L4.5 19H8l4-4 3.08 3.08L16.92 19l-5.79-5.79L18 6.5V3l-6.29 6.29L6.92 5z"></path>
+            </svg>
+            <svg class="viking-toggle__icon viking-toggle__icon--right" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 2L2 7l3 2-3 6 6-2 4 9 4-9 6 2-3-6 3-2-10-5zm0 4l4 2-4 8-4-8 4-2z"></path>
+            </svg>
+            <div class="viking-toggle__knob"><div class="viking-toggle__shield"></div></div>
+          </div>
+        </label>
+      </div>
+
+      <a href="cart.html" class="cart-btn" aria-label="عربة التسوق">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+        <span class="cart-count" id="cartCount" aria-hidden="true">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="side-menu-overlay" id="sideMenuOverlay" hidden></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true" aria-label="القائمة الرئيسية">
+  <div class="side-menu-header">
+    <span class="side-menu-title">FIGURAX</span>
+    <button class="side-menu-close" id="sideMenuClose" type="button" aria-label="إغلاق القائمة">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </div>
+  <nav class="side-menu-nav" aria-label="التنقل الرئيسي">
+    <a href="index.html" data-i18n="nav.home"><i class="fa-solid fa-house" aria-hidden="true"></i><span>الرئيسية</span></a>
+    <a href="products.html" data-i18n="nav.products"><i class="fa-solid fa-box-open" aria-hidden="true"></i><span>المنتجات</span></a>
+    <a href="cart.html" data-i18n="nav.cart"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>العربة</span><span class="side-cart-count" id="sideCartCount">0</span></a>
+  </nav>
+</aside>
+
+  <main id="main-content" role="main">
+    <section class="section checkout-page" aria-labelledby="checkout-title">
+      <div class="container">
+        <header class="section-header mb-lg">
+          <h1 id="checkout-title" class="section-title" data-i18n="checkout.title">إتمام الطلب</h1>
+        </header>
+
+        <form id="checkoutForm" class="checkout-grid" novalidate>
+          <div class="checkout-form">
+            <fieldset class="checkout-section" aria-labelledby="customer-info-legend">
+              <legend id="customer-info-legend" class="checkout-section-title" data-i18n="checkout.customerInfo">معلومات العميل</legend>
+
+              <div class="form-group">
+                <label for="fullName" class="form-label">
+                  <span data-i18n="checkout.fullName">الاسم بالكامل</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input type="text" id="fullName" name="fullName" class="form-input" required autocomplete="name" aria-required="true">
+                <div class="form-error" id="fullNameError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span data-i18n="checkout.email">البريد الإلكتروني</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input type="email" id="email" name="email" class="form-input" required autocomplete="email" aria-required="true">
+                <div class="form-error" id="emailError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="gender" class="form-label">
+                  <span data-i18n="checkout.gender">النوع</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <select id="gender" name="gender" class="form-select" required aria-required="true">
+                  <option value="" disabled selected data-i18n="checkout.selectGender">اختر الجنس</option>
+                  <option value="male" data-i18n="checkout.male">ذكر</option>
+                  <option value="female" data-i18n="checkout.female">أنثى</option>
+                </select>
+                <div class="form-error" id="genderError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="form-label">
+                  <span data-i18n="checkout.phone">رقم الهاتف</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <input type="tel" id="phone" name="phone" class="form-input" required autocomplete="tel" aria-required="true" placeholder="01XXXXXXXXX">
+                <div class="form-error" id="phoneError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="governorate" class="form-label">
+                  <span data-i18n="checkout.governorate">المحافظة</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <select id="governorate" name="governorate" class="form-select" required aria-required="true">
+                  <option value="" disabled selected data-i18n="checkout.selectGovernorate">اختر المحافظة</option>
+                </select>
+                <div class="form-error" id="governorateError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="address" class="form-label">
+                  <span data-i18n="checkout.address">العنوان</span>
+                  <span class="required" aria-hidden="true">*</span>
+                </label>
+                <textarea id="address" name="address" class="form-textarea" required aria-required="true" placeholder="العنوان بالتفصيل (الشارع، رقم المبنى، الشقة، إلخ)"></textarea>
+                <div class="form-error" id="addressError" hidden data-i18n="checkout.required">هذا الحقل مطلوب</div>
+              </div>
+
+              <div class="form-group">
+                <label for="locationUrl" class="form-label">
+                  <span data-i18n="checkout.locationUrl">رابط الموقع</span>
+                </label>
+                <input type="url" id="locationUrl" name="locationUrl" class="form-input" placeholder="https://maps.google.com/..." autocomplete="off">
+              </div>
+            </fieldset>
+
+            <fieldset class="checkout-section" aria-labelledby="payment-legend">
+              <legend id="payment-legend" class="checkout-section-title" data-i18n="checkout.paymentMethod">طريقة الدفع</legend>
+
+              <div class="form-group">
+                <div class="flex gap-md" role="radiogroup" aria-label="اختر طريقة الدفع">
+                  <label class="flex-1 flex-center" style="padding:var(--spacing-md);border:2px solid var(--color-border);border-radius:var(--border-radius-md);cursor:pointer;transition:all var(--transition-fast);">
+                    <input type="radio" name="paymentMethod" value="cash_on_delivery" checked class="visually-hidden" aria-label="نقداً عند الاستلام">
+                    <div class="text-center">
+                      <i class="fa-solid fa-money-bill-wave" style="font-size:2rem;color:var(--color-primary);margin-bottom:var(--spacing-xs);" aria-hidden="true"></i>
+                      <div data-i18n="checkout.cashOnDelivery">الدفع عند الاستلام</div>
+                    </div>
+                  </label>
+
+                  <label class="flex-1 flex-center" style="padding:var(--spacing-md);border:2px solid var(--color-border);border-radius:var(--border-radius-md);cursor:pointer;transition:all var(--transition-fast);">
+                    <input type="radio" name="paymentMethod" value="instapay" class="visually-hidden" aria-label="إنستاباي">
+                    <div class="text-center">
+                      <i class="fa-solid fa-credit-card" style="font-size:2rem;color:var(--color-success);margin-bottom:var(--spacing-xs);" aria-hidden="true"></i>
+                      <div data-i18n="checkout.instapay">إنستاباي</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div id="instapayInfo" class="instapay-info" hidden>
+                <div class="instapay-info-title" data-i18n="checkout.instapayInfo">تفاصيل الدفع عبر إنستاباي</div>
+
+                <div class="instapay-info-row">
+                  <span data-i18n="checkout.instapayUsername">اسم المستخدم</span>
+                  <span id="instapayUsernameDisplay"></span>
+                </div>
+
+                <div class="instapay-info-row">
+                  <span data-i18n="checkout.instapayLink">رابط الدفع</span>
+                  <a
+                    id="instapayLinkDisplay"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="instapay-link"
+                    data-i18n="checkout.payNow"
+                  >ادفع الآن</a>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="checkout-section" aria-labelledby="notes-legend">
+              <legend id="notes-legend" class="checkout-section-title" data-i18n="checkout.notes">ملاحظات إضافية</legend>
+
+              <div class="form-group">
+                <textarea id="notes" name="notes" class="form-textarea" placeholder="أي ملاحظات خاصة بالطلب..."></textarea>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">
+              <span class="btn-text" data-i18n="checkout.confirmOrder">تأكيد الطلب</span>
+
+              <span class="btn-loading" hidden>
+                <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+                <span data-i18n="checkout.processing">جاري معالجة الطلب...</span>
+              </span>
+            </button>
+          </div>
+
+          <aside class="checkout-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title" class="checkout-summary-title" data-i18n="checkout.orderSummary">ملخص الطلب</h2>
+
+            <div id="orderSummary">
+              <div class="flex-center" style="padding:var(--spacing-xl);">
+                <div class="spinner" aria-hidden="true"></div>
+              </div>
+            </div>
+          </aside>
+        </form>
+      </div>
+    </section>
+
+    <div class="modal-overlay" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="successTitle" data-i18n="checkout.success">تم الطلب بنجاح!</h3>
+
+          <button class="modal-close" aria-label="إغلاق">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="text-center mb-lg">
+            <div style="width:80px;height:80px;border-radius:50%;background:var(--color-success);display:flex;align-items:center;justify-content:center;margin:0 auto var(--spacing-md);">
+              <i class="fa-solid fa-check" style="font-size:2rem;color:white;" aria-hidden="true"></i>
+            </div>
+
+            <h4 data-i18n="checkout.orderConfirmed">تم تأكيد طلبك</h4>
+            <p id="orderIdDisplay" style="color:var(--color-text-muted);"></p>
+          </div>
+
+          <div class="instapay-info" id="successInstapayInfo" hidden>
+            <div class="instapay-info-title" data-i18n="checkout.paymentDetails">تفاصيل الدفع</div>
+
+            <p data-i18n="checkout.completePayment">أكمل الدفع عبر إنستاباي</p>
+
+            <a
+              id="successInstapayLink"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="instapay-link"
+              style="display:inline-block;margin-top:var(--spacing-sm);"
+              data-i18n="checkout.payNow"
+            >ادفع الآن</a>
+          </div>
+
+          <p
+            class="text-center"
+            style="color:var(--color-text-muted);font-size:var(--font-size-sm);margin-top:var(--spacing-lg);"
+            data-i18n="checkout.followUp"
+          >سيتواصل معك فريق FIGURAX للمتابعة وتأكيد التفاصيل.</p>
+        </div>
+
+        <div class="modal-footer">
+          <a
+            href="index.html"
+            class="btn btn-primary btn-block"
+            data-i18n="common.backToHome"
+          >العودة للرئيسية</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 FIGURAX Store. <span data-i18n="common.allRights">جميع الحقوق محفوظة</span>.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="assets/js/i18n.js"></script>
+  <script type="module" src="assets/js/api.js"></script>
+  <script type="module" src="assets/js/cart.js"></script>
+  <script type="module" src="assets/js/common.js"></script>
+  <script type="module" src="assets/js/checkout.js"></script>
+</body>
+</html>
